@@ -21,6 +21,7 @@ jobs:
       - name: upload plan files
         uses: actions/upload-artifact@v4
   terraform-apply:
+    needs: terraform-configure
     runs-on: ubuntu-latest
     steps:
     - name: checkout code
