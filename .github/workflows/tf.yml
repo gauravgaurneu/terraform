@@ -7,4 +7,12 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v4
       - name: install terraform
-        uses: 
+        uses: hashicorp/setup-terraform@v2.0.3
+      - name: Azure login
+        uses: Azure/login@v2.3.0
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+      - name: terraform init
+        run: terraform init
+      - name: terraform plan
+        run: terraform plan
