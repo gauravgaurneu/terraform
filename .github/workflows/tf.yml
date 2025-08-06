@@ -3,6 +3,8 @@ on: [push, workflow_dispatch]
 jobs:
   terraform-configure:
     runs-on: ubuntu-latest
+    outputs:
+      plan-changes: ${{steps.set-plan-changes.outputs.plan-changes}}
     steps:
       - name: checkout code
         uses: actions/checkout@v4
@@ -15,13 +17,30 @@ jobs:
       - name: terraform init
         run: terraform init
       - name: terraform plan
+        id: set-plan-changes
         run: |
-          terraform plan -out=tfplan.binary
-          terraform show -no-color tfplan.binary >tfplan.txt
+          terraform plan -detailed-exitcode -out=tfplan.binary
+          exit_code=$?
+          if [#exit_code -eq 0]; then
+            echo "No changes detected to Infra"
+          elif [#exit_code -eq 2]; then
+            echo "Changes detected"
+            terraform show -no-color tfplan.binary >tfplan.txt
+            echo "plan-changes=true" >>"$GITHUB_OUTPUT"
+          else
+            echo "Plan failed"
+            exit $exit_code
       - name: upload plan files
+        if: steps.set-plan-changes.output.plan-changes == 'true'
         uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: |
+            tfplan.binary
+            tfplan.txt
   terraform-apply:
     needs: terraform-configure
+    if: needs.terraform-configure.outputs.plan-changes == 'true'
     runs-on: ubuntu-latest
     steps:
     - name: checkout code
