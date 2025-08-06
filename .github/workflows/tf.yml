@@ -17,29 +17,15 @@ jobs:
       - name: terraform init
         run: terraform init
       - name: terraform plan
+        continue-on-error: true
         id: set-plan-changes
         shell: bash
         run: |
           terraform plan -detailed-exitcode -out=tfplan.binary
-          exit_code=$?
-          echo "DEBUG: exit_code=$exit_code"
-          if [ $exit_code -eq 0 ]; then
-            echo "No changes detected to Infra"
-            echo "DEBUG: plan-changes=false"
-            echo "plan-changes=false" >> "$GITHUB_OUTPUT"
-          elif [ $exit_code -eq 2 ]; then
-            echo "Changes detected"
-            terraform show -no-color tfplan.binary >tfplan.txt
-            echo "DEBUG: plan-changes=true" 
-            echo "plan-changes=true" >>"$GITHUB_OUTPUT"
-          else
-            echo "Plan failed"
-            exit $exit_code
-          fi
-      - name: Check plan-changes value
-        run: echo "plan-changes = ${{ steps.set-plan-changes.outputs.plan-changes }}"
-      - name: upload plan files
-        if: steps.set-plan-changes.outputs.plan-changes == 'true'
+          terraform show -no-color tfplan.binary >tfplan.txt
+      - name: upload plan files if present
+        continue-on-error: true
+        if: hashFiles('tfplan.binary') != ''
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
@@ -48,7 +34,7 @@ jobs:
             tfplan.txt
   terraform-apply:
     needs: terraform-configure
-    if: needs.terraform-configure.outputs.plan-changes == 'true'
+    if: hashFiles('tfplan.binary') != ''
     runs-on: ubuntu-latest 
     environment: apply
     steps:
