@@ -34,7 +34,7 @@ jobs:
     - name: terraform init
       run: terraform init
     - name: download plan
-      run: actions/download-artifact@v4
+      uses: actions/download-artifact@v4
       with:
         name: tfplan
     - name: terraform apply
