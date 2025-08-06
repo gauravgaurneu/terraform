@@ -33,7 +33,7 @@ jobs:
             exit $exit_code
           fi
       - name: upload plan files
-        if: steps.set-plan-changes.output.plan-changes == 'true'
+        if: steps.set-plan-changes.outputs.plan-changes == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
