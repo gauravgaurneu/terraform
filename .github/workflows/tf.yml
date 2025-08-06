@@ -1,5 +1,5 @@
 name: terraform deployment
-on: workflow_dispatch
+on: [push, workflow_dispatch]
 jobs:
   terraform-configure:
     runs-on: ubuntu-latest
@@ -16,7 +16,7 @@ jobs:
         run: terraform init
       - name: terraform plan
         run: |
-          terraform plan -out =tfplan.binary
+          terraform plan -out=tfplan.binary
           terraform show -no-color tfplan.binary >tfplan.txt
       - name: upload plan files
         uses: actions/upload-artifact@v4
