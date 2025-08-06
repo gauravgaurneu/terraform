@@ -24,8 +24,8 @@ jobs:
           terraform plan -detailed-exitcode -out=tfplan.binary
           terraform show -no-color tfplan.binary >tfplan.txt
       - name: upload plan files if present
+        id: plan-out
         continue-on-error: true
-        if: hashFiles('tfplan.binary') != ''
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
@@ -34,7 +34,7 @@ jobs:
             tfplan.txt
   terraform-apply:
     needs: terraform-configure
-    if: hashFiles('tfplan.binary') != ''
+    if: needs.terraform-configure.result == 'success'
     runs-on: ubuntu-latest 
     environment: apply
     steps:
