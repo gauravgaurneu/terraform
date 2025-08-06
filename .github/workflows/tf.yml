@@ -20,8 +20,9 @@ jobs:
         id: set-plan-changes
         shell: bash
         run: |
-          terraform plan -detailed-exitcode -out=tfplan.binary || exit_code=$?
-          exit_code=${exit_code:-0}
+          terraform plan -detailed-exitcode -out=tfplan.binary
+          exit_code=$?
+          echo "DEBUG: exit_code=$exit_code"
           if [ $exit_code -eq 0 ]; then
             echo "No changes detected to Infra"
             echo "DEBUG: plan-changes=false"
