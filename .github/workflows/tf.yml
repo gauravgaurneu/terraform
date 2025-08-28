@@ -3,8 +3,6 @@ on: [push, workflow_dispatch]
 jobs:
   terraform-configure:
     runs-on: ubuntu-latest
-    outputs:
-      plan-changes: ${{steps.set-plan-changes.outputs.plan-changes}}
     steps:
       - name: checkout code
         uses: actions/checkout@v4
