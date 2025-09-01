@@ -17,22 +17,22 @@ provider "azurerm" {
   features {
 
   }
-  subscription_id = "e1789001-12cb-4ff3-8522-59a2dafc5dca"
+  subscription_id = var.subscription_id
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "gg-rg"
-  location = "centralindia"
+  name     = var.rg-name
+  location = var.location
   tags = {
-    "owner" = "gaurav.gaur@neudesic.com"
+    "owner" = var.owner
   }
 }
 
 resource "azurerm_managed_disk" "disk" {
-  name                 = "gg-disk1"
+  name                 = var.disk-name
   location             = azurerm_resource_group.rg.location
   resource_group_name  = azurerm_resource_group.rg.name
   create_option        = "Empty"
   storage_account_type = "Standard_LRS"
-  disk_size_gb         = 256
+  disk_size_gb         = var.disk-size
 }
