@@ -3,7 +3,7 @@ terraform {
       storage_account_name = "ggst0101"
       resource_group_name = "test-RG"
       container_name = "backend"
-      key = "backend.tfstate"
+      key = "github-backend.tfstate"
     }
   required_providers {
     azurerm = {
